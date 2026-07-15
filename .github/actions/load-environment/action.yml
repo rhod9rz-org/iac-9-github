@@ -1,0 +1,58 @@
+# .github/actions/load-environment/action.yml
+
+name: load-environment
+
+description: Load Environment Parameters
+
+inputs:
+  fullEnvironment:
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Install yq
+      shell: bash
+      run: |
+        echo "***** Install yq *****"
+        sudo curl -L https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq
+        sudo chmod +x /usr/local/bin/yq
+        yq --version
+
+    - name: Load Environment Parameters
+      shell: bash
+      run: |
+        echo "***** Load Environment Parameters *****"
+        environment="${{ inputs.fullEnvironment }}"
+        # Azure
+        echo "Loading parameters for ${environment}"
+        echo "azureClientId=$(yq ".${environment}.azureClientId" .github/config/2-applyParameters.yml)" >> $GITHUB_ENV
+        echo "azureSubscriptionId=$(yq ".${environment}.azureSubscriptionId" .github/config/2-applyParameters.yml)" >> $GITHUB_ENV
+        echo "azureTenantId=$(yq ".${environment}.azureTenantId" .github/config/2-applyParameters.yml)" >> $GITHUB_ENV
+        # Terraform
+        echo "tfEnvironment=$(yq ".${environment}.tfEnvironment" .github/config/2-applyParameters.yml)" >> $GITHUB_ENV
+        echo "tfRegion=$(yq ".${environment}.tfRegion" .github/config/2-applyParameters.yml)" >> $GITHUB_ENV
+        echo "tfStateResourceGroup=$(yq ".${environment}.tfStateResourceGroup" .github/config/2-applyParameters.yml)" >> $GITHUB_ENV
+        echo "tfStateStorageAccount=$(yq ".${environment}.tfStateStorageAccount" .github/config/2-applyParameters.yml)" >> $GITHUB_ENV
+        echo "tfStateContainerName=$(yq ".${environment}.tfStateContainerName" .github/config/2-applyParameters.yml)" >> $GITHUB_ENV
+        echo "tfStateKey=$(yq ".${environment}.tfStateKey" .github/config/2-applyParameters.yml)" >> $GITHUB_ENV
+        echo "terraformVersion=$(yq ".${environment}.terraformVersion" .github/config/2-applyParameters.yml)" >> $GITHUB_ENV
+
+    - name: Check Loaded Parameters
+      shell: bash
+      run: |
+        echo "***** Check Loaded Parameters *****"
+        # Azure
+        echo "azureClientId: ${azureClientId}"
+        echo "azureSubscriptionId: ${azureSubscriptionId}"
+        echo "azureTenantId: ${azureTenantId}"
+        # Terraform
+        echo "tfEnvironment: ${tfEnvironment}"
+        echo "tfRegion: ${tfRegion}"
+        echo "tfStateResourceGroup: ${tfStateResourceGroup}"
+        echo "tfStateStorageAccount: ${tfStateStorageAccount}"
+        echo "tfStateContainerName: ${tfStateContainerName}"
+        echo "tfStateKey: ${tfStateKey}"
+        echo "terraformVersion: ${terraformVersion}"

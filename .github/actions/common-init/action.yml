@@ -1,0 +1,59 @@
+# .github/actions/common-init/action.yml
+
+name: common-init
+
+description: Common Init Steps
+
+runs:
+  using: composite
+
+  steps:
+
+    # Install specific version of terraform.
+    - name: Terraform Setup
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ env.terraformVersion }}
+        terraform_wrapper: false # required for detailed-exitcode to work.
+
+    # Run terraform init.
+    - name: Terraform Init
+      shell: bash
+      run: |
+        echo "***** Terraform Init *****"
+        terraform init \
+          -backend-config="resource_group_name=${tfStateResourceGroup}" \
+          -backend-config="storage_account_name=${tfStateStorageAccount}" \
+          -backend-config="container_name=${tfStateContainerName}" \
+          -backend-config="key=${tfStateKey}" \
+          -backend-config="use_azuread_auth=true"
+
+    # Terraform format check.
+    - name: Terraform Format
+      shell: bash
+      run: |
+        echo "***** Terraform Format *****"
+        terraform fmt -recursive -check
+
+    # Terraform lint check.
+    - name: Terraform Lint
+      shell: bash
+      run: |
+        echo "***** Terraform Lint *****"
+        latest_version=$(curl --silent "https://api.github.com/repos/terraform-linters/tflint/releases/latest" | jq -r .tag_name)
+        tmp_dir=$(mktemp -d)
+        curl -L https://github.com/terraform-linters/tflint/releases/download/${latest_version}/tflint_linux_amd64.zip -o ${tmp_dir}/tflint.zip
+        mkdir -p ${HOME}/bin
+        unzip -o ${tmp_dir}/tflint.zip -d ${HOME}/bin/
+        chmod +x ${HOME}/bin/tflint
+        export PATH=$PATH:${HOME}/bin
+        tflint --version
+        tflint --var-file="environments/${tfEnvironment}/${tfRegion}/${tfEnvironment}-${tfRegion}.tfvars"
+        rm -rf ${tmp_dir}
+
+    # Run terraform validate.
+    - name: Terraform Validate
+      shell: bash
+      run: |
+        echo "***** Terraform Validate *****"
+        terraform validate

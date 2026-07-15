@@ -1,0 +1,19 @@
+# .github/actions/plan/action.yml
+
+name: plan
+
+description: Terraform Plan Steps
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Common Before
+      uses: ./.github/actions/common-before
+
+    - name: Common Init
+      uses: ./.github/actions/common-init
+
+    - name: Common Plan
+      uses: ./.github/actions/common-plan

@@ -1,0 +1,26 @@
+# .github/actions/common-before/action.yml
+
+name: common-before
+
+description: Common Before Steps
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ env.azureClientId }}
+        tenant-id: ${{ env.azureTenantId }}
+        subscription-id: ${{ env.azureSubscriptionId }}
+
+    # - name: Enable Terraform OIDC
+    #   shell: bash
+    #   run: |
+    #     echo "ARM_USE_OIDC=true" >> $GITHUB_ENV
+    #     echo "ARM_USE_AZUREAD=true" >> $GITHUB_ENV
+    #     echo "ARM_CLIENT_ID=${azureClientId}" >> $GITHUB_ENV
+    #     echo "ARM_TENANT_ID=${azureTenantId}" >> $GITHUB_ENV
+    #     echo "ARM_SUBSCRIPTION_ID=${azureSubscriptionId}" >> $GITHUB_ENV

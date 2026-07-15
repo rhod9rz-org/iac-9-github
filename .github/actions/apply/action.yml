@@ -1,0 +1,35 @@
+# .github/actions/apply/action.yml
+
+name: apply
+
+description: Terraform Apply Steps
+
+runs:
+  using: composite
+
+  steps:
+
+    - name: Common Before
+      uses: ./.github/actions/common-before
+
+    - name: Common Init
+      uses: ./.github/actions/common-init
+
+    - name: Common Plan
+      id: commonPlan
+      uses: ./.github/actions/common-plan
+
+    - name: Verify Plan Outputs
+      shell: bash
+      run: |
+        echo "***** Verify Plan Outputs *****"
+        echo "planChanged: ${{ steps.commonPlan.outputs.planChanged }}"
+
+    - name: Terraform Apply
+      if: steps.commonPlan.outputs.planChanged == 'true'
+      shell: bash
+      run: |
+        echo "***** Terraform Apply *****"
+        terraform apply \
+          -input=false \
+          "${tfEnvironment}-${tfRegion}-tfplan"

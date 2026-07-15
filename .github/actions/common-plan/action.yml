@@ -1,0 +1,73 @@
+# .github/actions/common-plan/action.yml
+
+name: common-plan
+
+description: Common Terraform Plan Steps
+
+runs:
+  using: composite
+
+  steps:
+
+    # Run terraform plan.
+    - name: Terraform Plan
+      id: plan
+      shell: bash
+      run: |
+        echo "***** Terraform Plan *****"
+        set +e
+        terraform plan \
+          -var-file="environments/${tfEnvironment}/${tfRegion}/${tfEnvironment}-${tfRegion}.tfvars" \
+          -out="${tfEnvironment}-${tfRegion}-tfplan" \
+          -detailed-exitcode
+        retVal=$?
+        set -e
+        if [ "${retVal}" -eq 0 ]; then
+          echo "planChanged=false" >> "$GITHUB_OUTPUT"
+          echo "ExitCode 0 - No Changes Detected"
+        elif [ "${retVal}" -eq 2 ]; then
+          echo "planChanged=true" >> "$GITHUB_OUTPUT"
+          echo "ExitCode 2 - Changes Detected"
+        else
+          echo "Terraform plan failed"
+          exit "${retVal}"
+        fi
+
+    # Format terraform plan for manual review.
+    - name: Terraform Plan - Markdown
+      shell: bash
+      run: |
+        echo "***** Terraform Plan - Markdown *****"
+        terraform show \
+          -no-color \
+          "${tfEnvironment}-${tfRegion}-tfplan" \
+          > "${tfEnvironment}-${tfRegion}-tfplan.md"
+        sed -i '1 i\```' "${tfEnvironment}-${tfRegion}-tfplan.md"
+        echo '```' >> "${tfEnvironment}-${tfRegion}-tfplan.md"
+
+    # Does the plan have any changes?
+    - name: Terraform Check Plan
+      shell: bash
+      run: |
+        echo "***** Terraform Check Plan *****"
+        echo "Does the plan have any changes? ${{ steps.plan.outputs.planChanged }}"
+
+    # Publish tfplan to be used by terraform apply.
+    - name: Upload Terraform Plan
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan
+        path: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan
+
+    # Publish tfplan.md for manual review purposes.
+    - name: Upload Terraform Plan Markdown
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan.md
+        path: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan.md
+
+outputs:
+
+  planChanged:
+    description: Does Terraform Plan Contain Changes
+    value: ${{ steps.plan.outputs.planChanged }}

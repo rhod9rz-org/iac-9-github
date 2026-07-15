@@ -1,0 +1,39 @@
+# .github/workflows/1-plan-hub-uks.yml
+
+name: 1-plan-hub-uks
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  # Azure
+  azureClientId:         '28412c13-5870-49c8-9777-0efe0fab6510' # sp_appl_prd_01 | Application (Client) ID.
+  azureSubscriptionId:   '2bc7b65e-18d6-42ae-afb2-e66d50be6b05' # appl_prd_01.
+  azureTenantId:         '73578441-dc3d-4ecd-a298-fc5c6f40e191' # payg2106.onmicrosoft.com.
+  # Terraform
+  tfEnvironment:         'hub'                                  # used to form the path to the tfvars file.
+  tfRegion:              'uks'                                  # used to form the path to the tfvars file.
+  tfStateResourceGroup:  'rg-hub-uks-01'                        # used for terraform init.
+  tfStateStorageAccount: 'sardzhubukstfstate'                   # used for terraform init.
+  tfStateContainerName:  'iac-9-github'                         # used for terraform init.
+  tfStateKey:            'hub-uks.tfstate'                      # used for terraform init.
+  terraformVersion:      'latest'                               # what version of terraform do you want to use.
+
+jobs:
+  validate:
+    name: hub_uks_validate
+
+    runs-on:
+      group: ai-hub-runners
+      labels: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Plan
+        uses: ./.github/actions/plan

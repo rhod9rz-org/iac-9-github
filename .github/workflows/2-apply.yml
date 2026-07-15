@@ -1,0 +1,60 @@
+# .github/workflows/2-apply.yml
+
+name: 2-apply
+
+on:
+  workflow_dispatch:
+    inputs:
+      fullEnvironment:
+        description: "Select Environment"
+        required: true
+        type: choice
+        options:
+          - hub_uks
+          - dev_uks
+          - tst_uks
+          - prd_uks
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+
+  plan:
+
+    name: ${{ inputs.fullEnvironment }}_plan
+
+    runs-on:
+      group: ai-hub-runners
+      labels: self-hosted
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Load Environment Variables
+        uses: ./.github/actions/load-environment
+        with:
+          fullEnvironment: ${{ inputs.fullEnvironment }}
+
+      - name: Plan
+        uses: ./.github/actions/plan
+
+  approval:
+
+    name: ${{ inputs.fullEnvironment }}_approval
+
+    needs: plan
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ inputs.fullEnvironment }}
+
+    steps:
+
+      - name: Approval Complete
+        run: |
+          echo "***** Approval Complete *****"
