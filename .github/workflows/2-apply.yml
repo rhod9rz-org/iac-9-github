@@ -26,7 +26,7 @@ jobs:
   ##########
   plan:
 
-    name: ${{ inputs.fullEnvironment }}_plan
+    name: ${{ inputs.fullEnvironment }}-plan
 
     runs-on:
       group: ai-hub-runners
@@ -50,7 +50,7 @@ jobs:
   ##############
   approval:
 
-    name: ${{ inputs.fullEnvironment }}_approval
+    name: ${{ inputs.fullEnvironment }}-approval
 
     needs: plan
 
@@ -70,7 +70,7 @@ jobs:
   ###########
   apply:
 
-    name: ${{ inputs.fullEnvironment }}_apply
+    name: ${{ inputs.fullEnvironment }}-apply
 
     needs: approval
 
