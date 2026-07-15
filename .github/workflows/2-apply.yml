@@ -10,10 +10,10 @@ on:
         required: true
         type: choice
         options:
-          - hub_uks
-          - dev_uks
-          - tst_uks
-          - prd_uks
+          - hub-uks
+          - dev-uks
+          - tst-uks
+          - prd-uks
 
 permissions:
   id-token: write

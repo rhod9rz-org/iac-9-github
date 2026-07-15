@@ -1,6 +1,6 @@
 # .github/config/2-applyParameters.yml
 
-hub_uks:
+hub-uks:
   # Azure
   azureClientId:         '28412c13-5870-49c8-9777-0efe0fab6510'
   azureSubscriptionId:   '2bc7b65e-18d6-42ae-afb2-e66d50be6b05'

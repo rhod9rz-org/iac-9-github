@@ -25,7 +25,7 @@ env:
 
 jobs:
   validate:
-    name: hub_uks_validate
+    name: hub-uks-validate
 
     runs-on:
       group: ai-hub-runners
