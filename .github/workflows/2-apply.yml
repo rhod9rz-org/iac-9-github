@@ -96,7 +96,7 @@ jobs:
       - name: Download Plan Changed Flag
         uses: actions/download-artifact@v4
         with:
-          name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-plan-changed
+          name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-planchanged
 
       - name: Download Terraform Lock File
         uses: actions/download-artifact@v4

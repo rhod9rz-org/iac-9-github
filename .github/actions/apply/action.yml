@@ -19,11 +19,11 @@ runs:
       shell: bash
       run: |
         echo "***** Check Plan Changed *****"
-        echo "plan-changed=$(cat plan-changed.txt)" >> "$GITHUB_ENV"
-        cat plan-changed.txt
+        echo "planchanged=$(cat planchanged.txt)" >> "$GITHUB_ENV"
+        cat planchanged.txt
 
     - name: Terraform Apply
-      if: env.plan-changed == 'true'
+      if: env.planchanged == 'true'
       shell: bash
       run: |
         echo "***** Terraform Apply *****"
