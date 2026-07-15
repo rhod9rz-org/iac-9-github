@@ -21,6 +21,9 @@ permissions:
 
 jobs:
 
+  ##########
+  ## PLAN ##
+  ##########
   plan:
 
     name: ${{ inputs.fullEnvironment }}_plan
@@ -42,6 +45,9 @@ jobs:
       - name: Plan
         uses: ./.github/actions/plan
 
+  ##############
+  ## APPROVAL ##
+  ##############
   approval:
 
     name: ${{ inputs.fullEnvironment }}_approval
@@ -58,3 +64,39 @@ jobs:
       - name: Approval Complete
         run: |
           echo "***** Approval Complete *****"
+
+  ###########
+  ## APPLY ##
+  ###########
+  apply:
+
+    name: ${{ inputs.fullEnvironment }}_apply
+
+    needs: approval
+
+    runs-on:
+      group: ai-hub-runners
+      labels: self-hosted
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Load Environment Variables
+        uses: ./.github/actions/load-environment
+        with:
+          fullEnvironment: ${{ inputs.fullEnvironment }}
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan
+
+      - name: Download Plan Changed Flag
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-planChanged
+
+      - name: Apply
+        uses: ./.github/actions/apply

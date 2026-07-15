@@ -19,14 +19,15 @@ runs:
       id: commonPlan
       uses: ./.github/actions/common-plan
 
-    - name: Verify Plan Outputs
+    - name: Check Plan Changed
       shell: bash
       run: |
-        echo "***** Verify Plan Outputs *****"
-        echo "planChanged: ${{ steps.commonPlan.outputs.planChanged }}"
+        echo "***** Check Plan Changed *****"
+        echo "planChanged=$(cat planChanged.txt)" >> "$GITHUB_ENV"
+        cat planChanged.txt
 
     - name: Terraform Apply
-      if: steps.commonPlan.outputs.planChanged == 'true'
+      if: env.planChanged == 'true'
       shell: bash
       run: |
         echo "***** Terraform Apply *****"

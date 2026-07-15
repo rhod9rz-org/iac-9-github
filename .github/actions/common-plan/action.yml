@@ -11,7 +11,6 @@ runs:
 
     # Run terraform plan.
     - name: Terraform Plan
-      id: plan
       shell: bash
       run: |
         echo "***** Terraform Plan *****"
@@ -23,15 +22,16 @@ runs:
         retVal=$?
         set -e
         if [ "${retVal}" -eq 0 ]; then
-          echo "planChanged=false" >> "$GITHUB_OUTPUT"
+          planChanged=false
           echo "ExitCode 0 - No Changes Detected"
         elif [ "${retVal}" -eq 2 ]; then
-          echo "planChanged=true" >> "$GITHUB_OUTPUT"
+          planChanged=true
           echo "ExitCode 2 - Changes Detected"
         else
           echo "Terraform plan failed"
           exit "${retVal}"
         fi
+        echo "${planChanged}" > planChanged.txt
 
     # Format terraform plan for manual review.
     - name: Terraform Plan - Markdown
@@ -50,7 +50,15 @@ runs:
       shell: bash
       run: |
         echo "***** Terraform Check Plan *****"
-        echo "Does the plan have any changes? ${{ steps.plan.outputs.planChanged }}"
+        echo "Does the plan have any changes? $(cat planChanged.txt)"
+
+    # Publish planChanged flag to control terraform apply.
+    - name: Upload Plan Changed Flag
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-planChanged
+        path: planChanged.txt
+        if-no-files-found: error
 
     # Publish tfplan to be used by terraform apply.
     - name: Upload Terraform Plan
@@ -58,6 +66,7 @@ runs:
       with:
         name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan
         path: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan
+        if-no-files-found: error
 
     # Publish tfplan.md for manual review purposes.
     - name: Upload Terraform Plan Markdown
@@ -65,9 +74,3 @@ runs:
       with:
         name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan.md
         path: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan.md
-
-outputs:
-
-  planChanged:
-    description: Does Terraform Plan Contain Changes
-    value: ${{ steps.plan.outputs.planChanged }}
