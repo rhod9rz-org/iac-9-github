@@ -24,8 +24,8 @@ env:
   terraformVersion:      'latest'                               # what version of terraform do you want to use.
 
 jobs:
-  validate:
-    name: hub-uks-validate
+  plan:
+    name: hub-uks-plan
 
     runs-on:
       group: ai-hub-runners
