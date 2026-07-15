@@ -98,5 +98,10 @@ jobs:
         with:
           name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-planChanged
 
+      - name: Download Terraform Lock File
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-terraform-lock-file
+
       - name: Apply
         uses: ./.github/actions/apply

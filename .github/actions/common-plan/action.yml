@@ -74,3 +74,11 @@ runs:
       with:
         name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan.md
         path: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-tfplan.md
+
+    # Publish provider lock file to prevent errors at apply stage.
+    - name: Upload Terraform Lock File
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.tfEnvironment }}-${{ env.tfRegion }}-terraform-lock-file
+        path: .terraform.lock.hcl
+        include-hidden-files: true
