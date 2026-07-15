@@ -15,10 +15,6 @@ runs:
     - name: Common Init
       uses: ./.github/actions/common-init
 
-    - name: Common Plan
-      id: commonPlan
-      uses: ./.github/actions/common-plan
-
     - name: Check Plan Changed
       shell: bash
       run: |
