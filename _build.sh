@@ -20,5 +20,3 @@ terraform validate
 terraform plan -var-file="environments/hub/uks/hub-uks.tfvars"
 terraform apply -var-file="environments/hub/uks/hub-uks.tfvars" -auto-approve
 terraform destroy -var-file="environments/hub/uks/hub-uks.tfvars"
-
-tmp
