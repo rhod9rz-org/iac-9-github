@@ -31,6 +31,7 @@ git push -u origin --all
 # github pr validation
 name: main-pr-validation
 enforcement status: active
+target branches: add target - main
 branch rules: untick everything
 require a pull request before merging: tick
 - required approval: 1
