@@ -24,3 +24,15 @@ terraform destroy -var-file="environments/hub/uks/hub-uks.tfvars"
 # git
 git checkout -b feature/test-1255
 # make change
+git add .
+git commit -m "minor change"
+git push -u origin --all
+
+# github pr validation
+name: main-pr-validation
+enforcement status: active
+branch rules: untick everything
+require a pull request before merging: tick
+- required approval: 1
+- dismiss stale pull request approvals when new commits are pushed: tick
+- allowed merge methods: squash
