@@ -37,3 +37,5 @@ require a pull request before merging: tick
 - required approval: 0
 - dismiss stale pull request approvals when new commits are pushed: tick
 - allowed merge methods: squash
+require status checks to pass: tick
+- add: plan-hub-uks (and all other plan files)
