@@ -34,6 +34,6 @@ enforcement status: active
 target branches: add target - main
 branch rules: untick everything
 require a pull request before merging: tick
-- required approval: 1
+- required approval: 0
 - dismiss stale pull request approvals when new commits are pushed: tick
 - allowed merge methods: squash
